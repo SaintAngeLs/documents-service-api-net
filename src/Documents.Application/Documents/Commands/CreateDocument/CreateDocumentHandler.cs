@@ -26,7 +26,9 @@ public sealed class CreateDocumentHandler
         _mapper = mapper;
     }
 
-    public async Task<DocumentDetailsDto> HandleAsync(CreateDocument command, CancellationToken cancellationToken = default)
+    public async Task<DocumentDetailsDto> HandleAsync(
+        CreateDocument command,
+        CancellationToken cancellationToken = default)
     {
         var document = Document.Create(
             new DescriptiveNo(command.DescriptiveNo),
