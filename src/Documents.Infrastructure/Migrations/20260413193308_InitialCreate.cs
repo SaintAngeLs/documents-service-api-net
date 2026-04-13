@@ -11,19 +11,15 @@ namespace Documents.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.EnsureSchema(
-                name: "documents");
-
             migrationBuilder.CreateTable(
                 name: "documents",
-                schema: "documents",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     descriptive_no = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     kind = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: false),
                     created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    integrated_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    integrated_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     revision = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
@@ -33,12 +29,11 @@ namespace Documents.Infrastructure.Migrations
 
             migrationBuilder.CreateTable(
                 name: "integration_checkpoints",
-                schema: "documents",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
-                    last_processed_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    document_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    processed_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -47,7 +42,6 @@ namespace Documents.Infrastructure.Migrations
 
             migrationBuilder.CreateTable(
                 name: "document_items",
-                schema: "documents",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -62,7 +56,6 @@ namespace Documents.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "fk_document_items_documents_document_id",
                         column: x => x.document_id,
-                        principalSchema: "documents",
                         principalTable: "documents",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
@@ -70,43 +63,42 @@ namespace Documents.Infrastructure.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "ix_document_items_document_id",
-                schema: "documents",
                 table: "document_items",
                 column: "document_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_documents_descriptive_no",
-                schema: "documents",
                 table: "documents",
                 column: "descriptive_no");
 
             migrationBuilder.CreateIndex(
                 name: "ix_documents_integrated_at_utc",
-                schema: "documents",
                 table: "documents",
                 column: "integrated_at_utc");
 
             migrationBuilder.CreateIndex(
                 name: "ix_documents_kind",
-                schema: "documents",
                 table: "documents",
                 column: "kind");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_integration_checkpoints_document_id",
+                table: "integration_checkpoints",
+                column: "document_id",
+                unique: true);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "document_items",
-                schema: "documents");
+                name: "document_items");
 
             migrationBuilder.DropTable(
-                name: "integration_checkpoints",
-                schema: "documents");
+                name: "integration_checkpoints");
 
             migrationBuilder.DropTable(
-                name: "documents",
-                schema: "documents");
+                name: "documents");
         }
     }
 }

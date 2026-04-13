@@ -1,5 +1,5 @@
 using Documents.Infrastructure.Extensions;
-using Documents.Infrastructure.Persistence;
+using Documents.Infrastructure.PostgreSQL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

@@ -1,6 +1,6 @@
 using Documents.Application.Abstractions;
 
-namespace Documents.Infrastructure.Persistence;
+namespace Documents.Infrastructure.PostgreSQL;
 
 public sealed class UnitOfWork : IUnitOfWork
 {
@@ -11,6 +11,8 @@ public sealed class UnitOfWork : IUnitOfWork
         _dbContext = dbContext;
     }
 
-    public Task SaveChangesAsync(CancellationToken cancellationToken = default)
-        => _dbContext.SaveChangesAsync(cancellationToken);
+    public async Task SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        await _dbContext.SaveChangesAsync(cancellationToken);
+    }
 }
