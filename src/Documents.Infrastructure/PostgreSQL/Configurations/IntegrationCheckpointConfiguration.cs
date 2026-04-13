@@ -1,8 +1,8 @@
-using Documents.Infrastructure.Persistence.Entities;
+using Documents.Infrastructure.PostgreSQL.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Documents.Infrastructure.Persistence.Configurations;
+namespace Documents.Infrastructure.PostgreSQL.Configurations;
 
 public sealed class IntegrationCheckpointConfiguration : IEntityTypeConfiguration<IntegrationCheckpoint>
 {
@@ -12,12 +12,17 @@ public sealed class IntegrationCheckpointConfiguration : IEntityTypeConfiguratio
 
         builder.HasKey(x => x.Id);
 
-        builder.Property(x => x.CreatedAtUtc)
+        builder.Property(x => x.Id)
+            .ValueGeneratedNever();
+
+        builder.Property(x => x.DocumentId)
+            .IsRequired();
+
+        builder.Property(x => x.ProcessedAtUtc)
             .HasColumnType("timestamp with time zone")
             .IsRequired();
 
-        builder.Property(x => x.LastProcessedAtUtc)
-            .HasColumnType("timestamp with time zone")
-            .IsRequired(false);
+        builder.HasIndex(x => x.DocumentId)
+            .IsUnique();
     }
 }

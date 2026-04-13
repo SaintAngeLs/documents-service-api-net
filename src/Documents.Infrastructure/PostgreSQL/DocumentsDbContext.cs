@@ -1,13 +1,14 @@
-using Documents.Core.Documents.Entities;
-using Documents.Infrastructure.Persistence.Entities;
+using Documents.Infrastructure.PostgreSQL.Configurations;
+using Documents.Infrastructure.PostgreSQL.Documents.Entities;
+using Documents.Infrastructure.PostgreSQL.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Documents.Infrastructure.Persistence;
+namespace Documents.Infrastructure.PostgreSQL;
 
 public sealed class DocumentsDbContext : DbContext
 {
-    public DbSet<Document> Documents => Set<Document>();
-    public DbSet<DocumentItem> DocumentItems => Set<DocumentItem>();
+    public DbSet<DocumentEntity> Documents => Set<DocumentEntity>();
+    public DbSet<DocumentItemEntity> DocumentItems => Set<DocumentItemEntity>();
     public DbSet<IntegrationCheckpoint> IntegrationCheckpoints => Set<IntegrationCheckpoint>();
 
     public DocumentsDbContext(DbContextOptions<DocumentsDbContext> options) : base(options)
@@ -16,10 +17,7 @@ public sealed class DocumentsDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.HasDefaultSchema("documents");
-
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(DocumentsDbContext).Assembly);
-
         base.OnModelCreating(modelBuilder);
     }
 }

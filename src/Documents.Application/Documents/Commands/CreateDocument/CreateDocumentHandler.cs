@@ -39,6 +39,7 @@ public sealed class CreateDocumentHandler
         {
             document.AddItem(new DocumentItem(
                 DocumentItemId.Create(),
+                document.Id,
                 new ArticleName(item.ArticleName),
                 new TaxRate(item.TaxRate),
                 new NetValue(item.NetValue)));
