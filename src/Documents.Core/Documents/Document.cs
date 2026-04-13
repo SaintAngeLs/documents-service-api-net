@@ -122,6 +122,11 @@ public sealed class Document : AggregateRoot
         AddEvent(new DocumentIntegrated(Id, integratedAtUtc));
     }
 
+    public void CancelIntegration()
+    {
+        IntegratedAtUtc = new NullableUtcDateTime(null);
+    }
+
     public void IncreaseRevision()
     {
         Revision = Revision.Next();

@@ -1,13 +1,12 @@
 using Documents.Core.Documents.Entities;
 using Documents.Core.Documents.Repositories;
 using Documents.Core.Documents.ValueObjects;
-using Documents.Infrastructure.PostgreSQL.Documents.Entities;
 using Documents.Infrastructure.PostgreSQL.Documents.Mappings;
 using Microsoft.EntityFrameworkCore;
 
 namespace Documents.Infrastructure.PostgreSQL.Documents.Repositories;
 
-internal sealed class PostgresDocumentsRepository : IDocumentsRepository
+internal sealed class PostgresDocumentsRepository : IDocumentsRepository, IIntegrableDocumentsRepository
 {
     private readonly DocumentsDbContext _dbContext;
 
@@ -19,6 +18,7 @@ internal sealed class PostgresDocumentsRepository : IDocumentsRepository
     public async Task<Document?> GetAsync(DocumentId id)
     {
         var entity = await _dbContext.Documents
+            .AsNoTracking()
             .Include(x => x.Items)
             .SingleOrDefaultAsync(x => x.Id == id.Value);
 
@@ -28,14 +28,30 @@ internal sealed class PostgresDocumentsRepository : IDocumentsRepository
     public async Task<bool> ExistsAsync(DocumentId id)
     {
         return await _dbContext.Documents
+            .AsNoTracking()
             .AnyAsync(x => x.Id == id.Value);
     }
 
     public async Task<IReadOnlyList<Document>> BrowseAsync()
     {
         var entities = await _dbContext.Documents
+            .AsNoTracking()
             .Include(x => x.Items)
             .OrderByDescending(x => x.CreatedAtUtc)
+            .ToListAsync();
+
+        return entities
+            .Select(DocumentEntityMapper.ToDomain)
+            .ToList();
+    }
+
+    public async Task<IReadOnlyList<Document>> BrowseNotIntegratedAsync()
+    {
+        var entities = await _dbContext.Documents
+            .AsNoTracking()
+            .Include(x => x.Items)
+            .Where(x => x.IntegratedAtUtc == null)
+            .OrderBy(x => x.CreatedAtUtc)
             .ToListAsync();
 
         return entities

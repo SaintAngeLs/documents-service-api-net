@@ -1,4 +1,7 @@
+using Documents.Application.Documents.Commands.CancelDocumentIntegration;
 using Documents.Application.Documents.Commands.CreateDocument;
+using Documents.Application.Documents.Commands.IntegrateAllDocuments;
+using Documents.Application.Documents.Commands.IntegrateDocument;
 using Documents.Application.Documents.Commands.UpdateDocument;
 using Documents.Application.Documents.Queries.BrowseDocuments;
 using Documents.Application.Documents.Queries.GetDocument;
@@ -22,6 +25,10 @@ public static class Extensions
         services.AddScoped<GetDocumentHandler>();
         services.AddScoped<GetDocumentIntegrationStatusHandler>();
         services.AddScoped<GetDocumentsAggregateHandler>();
+
+        services.AddScoped<IntegrateAllDocumentsHandler>();
+        services.AddScoped<IntegrateDocumentHandler>();
+        services.AddScoped<CancelDocumentIntegrationHandler>();
 
         return services;
     }
