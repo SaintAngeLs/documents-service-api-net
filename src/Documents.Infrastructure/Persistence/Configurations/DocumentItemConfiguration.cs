@@ -13,14 +13,17 @@ public sealed class DocumentItemConfiguration : IEntityTypeConfiguration<Documen
 
         builder.HasKey(x => x.Id);
 
-        builder.Property<Guid>("DocumentId")
-            .IsRequired();
-
         builder.Property(x => x.Id)
             .HasConversion(
                 id => id.Value,
                 value => new DocumentItemId(value))
             .ValueGeneratedNever();
+
+        builder.Property(x => x.DocumentId)
+            .HasConversion(
+                id => id.Value,
+                value => new DocumentId(value))
+            .IsRequired();
 
         builder.Property(x => x.ArticleName)
             .HasConversion(
@@ -43,6 +46,6 @@ public sealed class DocumentItemConfiguration : IEntityTypeConfiguration<Documen
             .HasColumnType("numeric(18,2)")
             .IsRequired();
 
-        builder.HasIndex("DocumentId");
+        builder.HasIndex(x => x.DocumentId);
     }
 }

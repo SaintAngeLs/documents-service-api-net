@@ -45,8 +45,7 @@ public sealed class DocumentConfiguration : IEntityTypeConfiguration<Document>
             .HasConversion(
                 value => value.Value,
                 value => new NullableUtcDateTime(value))
-            .HasColumnType("timestamp with time zone")
-            .IsRequired(false);
+            .HasColumnType("timestamp with time zone");
 
         builder.Property(x => x.Revision)
             .HasConversion(
@@ -54,22 +53,16 @@ public sealed class DocumentConfiguration : IEntityTypeConfiguration<Document>
                 value => new Revision(value))
             .IsRequired();
 
-        builder.Property<List<object>>("_events")
-            .HasColumnName("ignored_domain_events")
-            .HasConversion(
-                _ => string.Empty,
-                _ => new List<object>())
-            .Metadata.SetAfterSaveBehavior(Microsoft.EntityFrameworkCore.Metadata.PropertySaveBehavior.Ignore);
-
+        builder.Ignore("_events");
         builder.Ignore(x => x.Events);
 
-        builder.HasMany<DocumentItem>("_items")
-            .WithOne()
-            .HasForeignKey("DocumentId")
-            .OnDelete(DeleteBehavior.Cascade);
+        builder.Metadata.FindNavigation(nameof(Document.Items))!
+            .SetPropertyAccessMode(PropertyAccessMode.Field);
 
-        builder.Navigation("_items")
-            .UsePropertyAccessMode(PropertyAccessMode.Field);
+        builder.HasMany(x => x.Items)
+            .WithOne(x => x.Document)
+            .HasForeignKey(x => x.DocumentId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasIndex(x => x.DescriptiveNo);
         builder.HasIndex(x => x.Kind);

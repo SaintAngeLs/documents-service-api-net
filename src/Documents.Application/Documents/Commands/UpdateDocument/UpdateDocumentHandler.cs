@@ -65,6 +65,7 @@ public sealed class UpdateDocumentHandler
             {
                 document.AddItem(new DocumentItem(
                     itemId,
+                    document.Id,
                     new ArticleName(item.ArticleName),
                     new TaxRate(item.TaxRate),
                     new NetValue(item.NetValue)));
