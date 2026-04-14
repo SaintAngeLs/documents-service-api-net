@@ -47,6 +47,28 @@ public sealed class Document : AggregateRoot
             createdAtUtc,
             new Revision(0));
 
+    public static Document Restore(
+        DocumentId id,
+        DescriptiveNo descriptiveNo,
+        DocumentKind kind,
+        UtcDateTime createdAtUtc,
+        NullableUtcDateTime integratedAtUtc,
+        Revision revision,
+        IEnumerable<DocumentItem> items)
+    {
+        var document = new Document(id, descriptiveNo, kind, createdAtUtc, revision);
+
+        document.IntegratedAtUtc = integratedAtUtc;
+
+        foreach (var item in items)
+        {
+            document._items.Add(item);
+        }
+
+        document.ClearEvents();
+        return document;
+    }
+
     public void ChangeDescriptiveNo(DescriptiveNo descriptiveNo)
     {
         EnsureEditable();
@@ -142,10 +164,10 @@ public sealed class Document : AggregateRoot
 
     private static void EnsureNetValueMatchesKind(DocumentKind kind, NetValue netValue)
     {
-        var isValid = kind.Value switch
+        var isValid = kind switch
         {
-            "RETURN" => netValue.IsNegative(),
-            "INVOICE" or "RECEIPT" => netValue.IsPositive(),
+            _ when kind.IsReturn => netValue.IsNegative(),
+            _ when kind.IsInvoice || kind.IsReceipt => netValue.IsPositive(),
             _ => false
         };
 
