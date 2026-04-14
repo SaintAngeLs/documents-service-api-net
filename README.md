@@ -1,6 +1,6 @@
 # Documents Service API
 
-Backendowe API w .NET 9 realizujące **Podzadanie 1** zadania rekrutacyjnego: endpointy dla lokalnej aplikacji desktopowej oraz dla integratora.
+API w .NET 9 realizujące serwerowy komponent dla lokalnej aplikacji desktopowej oraz dla integratora.
 
 ---
 
