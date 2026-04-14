@@ -4,33 +4,30 @@ using Documents.Core.Documents.ValueObjects;
 using Documents.Infrastructure.PostgreSQL.Documents.Entities;
 
 namespace Documents.Infrastructure.PostgreSQL.Documents.Mappings;
+
 internal static class DocumentEntityMapper
 {
     public static Document ToDomain(DocumentEntity entity)
     {
-        var document = new Document(
-            new DocumentId(entity.Id),
+        var documentId = new DocumentId(entity.Id);
+
+        var items = entity.Items
+            .Select(item => new DocumentItem(
+                new DocumentItemId(item.Id),
+                documentId,
+                new ArticleName(item.ArticleName),
+                new TaxRate(item.TaxRate),
+                new NetValue(item.NetValue)))
+            .ToList();
+
+        return Document.Restore(
+            documentId,
             new DescriptiveNo(entity.DescriptiveNo),
             DocumentKind.From(entity.Kind),
             new UtcDateTime(entity.CreatedAtUtc),
-            new Revision(entity.Revision));
-
-        if (entity.IntegratedAtUtc.HasValue)
-        {
-            document.MarkAsIntegrated(new UtcDateTime(entity.IntegratedAtUtc.Value));
-        }
-
-        foreach (var item in entity.Items)
-        {
-            document.AddItem(new DocumentItem(
-                new DocumentItemId(item.Id),
-                new DocumentId(item.DocumentId),
-                new ArticleName(item.ArticleName),
-                new TaxRate(item.TaxRate),
-                new NetValue(item.NetValue)));
-        }
-
-        return document;
+            new NullableUtcDateTime(entity.IntegratedAtUtc),
+            new Revision(entity.Revision),
+            items);
     }
 
     public static DocumentEntity ToEntity(Document domain)
