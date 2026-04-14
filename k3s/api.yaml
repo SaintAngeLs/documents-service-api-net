@@ -1,0 +1,52 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: documents-api
+  namespace: documents
+spec:
+  selector:
+    app: documents-api
+  ports:
+    - name: http
+      port: 8141
+      targetPort: 8141
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: documents-api
+  namespace: documents
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: documents-api
+  template:
+    metadata:
+      labels:
+        app: documents-api
+    spec:
+      containers:
+        - name: documents-api
+          image: documents-api:local
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8141
+              name: http
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: Development
+            - name: ASPNETCORE_URLS
+              value: http://+:8141
+            - name: ConnectionStrings__postgres
+              value: Host=documents-postgres;Port=5432;Database=documents_db;Username=documents_user;Password=documents_pass
+          readinessProbe:
+            tcpSocket:
+              port: 8141
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: 8141
+            initialDelaySeconds: 20
+            periodSeconds: 10
