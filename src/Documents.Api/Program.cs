@@ -18,9 +18,17 @@ await app.Services.InitializeInfrastructureAsync();
 
 if (app.Environment.IsDevelopment())
 {
+    app.UseStaticFiles();
+
     app.MapOpenApi();
-    app.MapScalarApiReference();
-    app.MapGet("/", () => Results.Redirect("/scalar"));
+
+    app.MapScalarApiReference(options =>
+    {
+        options
+            .WithTitle("Documents.Api")
+            .WithTheme(ScalarTheme.DeepSpace)
+            .WithJavaScriptConfiguration("/scalar-config.js");
+    });
 }
 else
 {
