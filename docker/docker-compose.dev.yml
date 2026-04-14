@@ -19,6 +19,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
+    networks:
+      - documents-network
 
   documents-api:
     build:
@@ -38,6 +40,8 @@ services:
       ConnectionStrings__postgres: Host=postgres;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
     ports:
       - "${API_PORT}:${API_PORT}"
+    networks:
+      - documents-network
 
   pgadmin:
     image: dpage/pgadmin4:8
@@ -55,7 +59,13 @@ services:
     volumes:
       - pgadmin_data:/var/lib/pgadmin
       - ./pgadmin/servers.json:/pgadmin4/servers.json:ro
+    networks:
+      - documents-network
 
 volumes:
   documents_postgres_data:
   pgadmin_data:
+
+networks:
+  documents-network:
+    driver: bridge
