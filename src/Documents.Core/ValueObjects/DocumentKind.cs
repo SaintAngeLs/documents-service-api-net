@@ -11,12 +11,13 @@ public readonly record struct DocumentKind
         Value = value;
     }
 
-    public static DocumentKind Invoice => new("INVOICE");
+    public static DocumentKind Invoice => new("Invoice");
+    public static DocumentKind Receipt => new("Receipt");
+    public static DocumentKind Return => new("Return");
 
-    public static DocumentKind Receipt => new("RECEIPT");
-
-    public static DocumentKind Return => new("RETURN");
-    
+    public bool IsInvoice => Value.Equals("Invoice", StringComparison.OrdinalIgnoreCase);
+    public bool IsReceipt => Value.Equals("Receipt", StringComparison.OrdinalIgnoreCase);
+    public bool IsReturn => Value.Equals("Return", StringComparison.OrdinalIgnoreCase);
 
     public static DocumentKind From(string value)
     {
@@ -31,9 +32,7 @@ public readonly record struct DocumentKind
         };
     }
 
-    public override string ToString()
-        => Value;
+    public override string ToString() => Value;
 
-    public static implicit operator string(DocumentKind kind)
-        => kind.Value;
+    public static implicit operator string(DocumentKind kind) => kind.Value;
 }
